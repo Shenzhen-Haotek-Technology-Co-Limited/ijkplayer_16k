@@ -17,6 +17,10 @@
 - 已为 `arm64-v8a/libijkffmpeg.so` 开启 Stack Canary（`-fstack-protector-strong`）。
 - 已修复运行时崩溃：`ijkav_register_async_protocol+24`（`SIGSEGV/SEGV_ACCERR`），n4.3 下改为兼容 no-op 注册逻辑。
 - 已补齐 `x86_64` 构建链路（NDK r22），并将 `APP_STL` 迁移为 `c++_static`。
+- 已修复 `x86_64` 下 HTTPS 不生效问题：
+  - `compile-openssl.sh x86_64` 现可稳定产出 `libssl.a/libcrypto.a`；
+  - `compile-ffmpeg.sh x86_64` 检测到 OpenSSL 已就绪但旧 `config.h` 未启用 `--enable-openssl` 时，会自动清理旧配置并重新 `configure`；
+  - 避免出现“OpenSSL 已编出，但 FFmpeg 仍复用旧配置，最终 `CONFIG_HTTPS_PROTOCOL=0`”的问题。
 - 已补齐 `armeabi-v7a`（FFmpeg 4.3）在 NDK r22 的构建兼容：
   - `compile-ijk.sh` 增加 `armv7a` 直接入口；
   - `ijkplayer-armv7a` 的 `APP_STL` 调整为 `c++_static`；
@@ -30,6 +34,7 @@
 - `arm64-v8a`：16K（`PT_LOAD Align = 0x4000`）
 - `x86_64`：16K（`PT_LOAD Align = 0x4000`）
 - `armeabi-v7a`：4K（`PT_LOAD Align = 0x1000`）
+- `x86_64` HTTPS：已验证 `CONFIG_OPENSSL=1`、`CONFIG_HTTPS_PROTOCOL=1`、`CONFIG_TLS_PROTOCOL=1`
 
 ### 4) 对比官方 ijkplayer 的 git diff 文件范围
 - `android/compile-ijk.sh`

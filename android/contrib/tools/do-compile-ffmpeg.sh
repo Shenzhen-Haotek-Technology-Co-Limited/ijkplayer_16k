@@ -343,9 +343,20 @@ echo "--------------------"
 echo "[*] configurate ffmpeg"
 echo "--------------------"
 cd $FF_SOURCE
+FF_RECONFIGURE=0
 if [ -f "./config.h" ]; then
-    echo 'reuse configure'
-else
+    if [ -f "${FF_DEP_OPENSSL_LIB}/libssl.a" ] && ! grep -q -- '--enable-openssl' ./config.h; then
+        echo 'stale configure without openssl, reconfigure'
+        FF_RECONFIGURE=1
+        make distclean > /dev/null 2>&1 || true
+        rm -f config.h config.mak
+        rm -f ffbuild/config.* ffbuild/.config
+    else
+        echo 'reuse configure'
+    fi
+fi
+
+if [ ! -f "./config.h" ] || [ "$FF_RECONFIGURE" = "1" ]; then
     which $CC
     ./configure $FF_CFG_FLAGS \
         --extra-cflags="$FF_CFLAGS $FF_EXTRA_CFLAGS" \
