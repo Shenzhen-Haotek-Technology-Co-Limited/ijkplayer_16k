@@ -199,11 +199,25 @@ mkdir -p $FF_PREFIX
 
 FF_TOOLCHAIN_TOUCH="$FF_TOOLCHAIN_PATH/touch"
 if [ ! -f "$FF_TOOLCHAIN_TOUCH" ]; then
-    $ANDROID_NDK/build/tools/make-standalone-toolchain.sh \
-        $FF_MAKE_TOOLCHAIN_FLAGS \
-        --platform=$FF_ANDROID_PLATFORM \
-        --toolchain=$FF_TOOLCHAIN_NAME
-    touch $FF_TOOLCHAIN_TOUCH;
+    # NDK r22+ removed make-standalone-toolchain.sh
+    # Use the NDK's toolchain directly instead
+    case "$IJK_NDK_REL" in
+        22*|23*|24*|25*|26*|27*)
+            echo "NDK r22+ detected, using unified toolchain"
+            mkdir -p $FF_TOOLCHAIN_PATH
+            # Create symlink to NDK toolchain
+            ln -sf $ANDROID_NDK/toolchains/llvm/prebuilt/darwin-x86_64/bin $FF_TOOLCHAIN_PATH/bin
+            ln -sf $ANDROID_NDK/toolchains/llvm/prebuilt/darwin-x86_64/sysroot $FF_TOOLCHAIN_PATH/sysroot
+            touch $FF_TOOLCHAIN_TOUCH
+        ;;
+        *)
+            $ANDROID_NDK/build/tools/make-standalone-toolchain.sh \
+                $FF_MAKE_TOOLCHAIN_FLAGS \
+                --platform=$FF_ANDROID_PLATFORM \
+                --toolchain=$FF_TOOLCHAIN_NAME
+            touch $FF_TOOLCHAIN_TOUCH
+        ;;
+    esac
 fi
 
 
@@ -251,12 +265,32 @@ EOF
 else
     export PATH=$FF_TOOLCHAIN_PATH/bin/:$PATH
 fi
+
+# Add gas-preprocessor to PATH
+export PATH=$FF_BUILD_ROOT/tools:$PATH
+
 #export CC="ccache ${FF_CROSS_PREFIX}-gcc"
-if [ "$FF_ARCH" = "armv7a" ]; then
-    export CC="armv7a-linux-androideabi16-clang"
-else
-    export CC="${FF_CROSS_PREFIX}-gcc"
-fi
+# NDK r22+ uses clang instead of gcc
+case "$IJK_NDK_REL" in
+    22*|23*|24*|25*|26*|27*)
+        if [ "$FF_ARCH" = "armv7a" ]; then
+            export CC="armv7a-linux-androideabi16-clang"
+        elif [ "$FF_ARCH" = "arm64" ]; then
+            export CC="aarch64-linux-android21-clang"
+        elif [ "$FF_ARCH" = "x86" ]; then
+            export CC="i686-linux-android16-clang"
+        elif [ "$FF_ARCH" = "x86_64" ]; then
+            export CC="x86_64-linux-android21-clang"
+        fi
+    ;;
+    *)
+        if [ "$FF_ARCH" = "armv7a" ]; then
+            export CC="armv7a-linux-androideabi16-clang"
+        else
+            export CC="${FF_CROSS_PREFIX}-gcc"
+        fi
+    ;;
+esac
 export LD=${FF_CROSS_PREFIX}-ld
 export AR=${FF_CROSS_PREFIX}-ar
 export RANLIB=${FF_CROSS_PREFIX}-ranlib
@@ -311,6 +345,12 @@ FF_CFG_FLAGS="$FF_CFG_FLAGS --prefix=$FF_PREFIX"
 
 # Advanced options (experts only):
 FF_CFG_FLAGS="$FF_CFG_FLAGS --cross-prefix=${FF_CROSS_PREFIX}-"
+# NDK r22+ requires explicit --cc flag since gcc is removed
+case "$IJK_NDK_REL" in
+    22*|23*|24*|25*|26*|27*)
+        FF_CFG_FLAGS="$FF_CFG_FLAGS --cc=$CC"
+    ;;
+esac
 FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-cross-compile"
 FF_CFG_FLAGS="$FF_CFG_FLAGS --target-os=linux"
 FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-pic"
