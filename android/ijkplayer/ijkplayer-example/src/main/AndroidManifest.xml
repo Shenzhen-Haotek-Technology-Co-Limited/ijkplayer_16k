@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="tv.danmaku.ijk.media.example">
-
-    <uses-sdk
-        android:minSdkVersion="9"
-        android:targetSdkVersion="22" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
 
     <!-- for umeng -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -18,12 +16,15 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:enableOnBackInvokedCallback="true"
+        android:requestLegacyExternalStorage="true">
         <activity
             android:name="tv.danmaku.ijk.media.example.activities.FileExplorerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="user"
+            android:exported="true"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,6 +33,7 @@
             </intent-filter>
         </activity>
         <activity
+            android:exported="true"
             android:name="tv.danmaku.ijk.media.example.activities.SampleMediaActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
@@ -39,6 +41,7 @@
             android:theme="@style/AppTheme">
         </activity>
         <activity
+            android:exported="true"
             android:name="tv.danmaku.ijk.media.example.activities.RecentMediaActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
@@ -46,12 +49,14 @@
             android:theme="@style/AppTheme">
         </activity>
         <activity
+            android:exported="true"
             android:name="tv.danmaku.ijk.media.example.activities.SettingsActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="user"
             android:theme="@style/AppTheme" />
         <activity
+            android:exported="true"
             android:name="tv.danmaku.ijk.media.example.activities.VideoActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"

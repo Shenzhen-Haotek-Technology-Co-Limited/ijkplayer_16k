@@ -2,29 +2,47 @@
 
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
+        maven { url "https://mvnrepository.com/artifact" }
+        maven { url 'https://jitpack.io' }
+        maven{ url 'https://maven.aliyun.com/repository/google'}
+        maven{ url 'https://maven.aliyun.com/repository/gradle-plugin'}
+        maven{ url 'https://maven.aliyun.com/repository/public'}
+        maven{ url 'https://maven.aliyun.com/repository/jcenter'}
+        maven { url 'https://maven.google.com' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.3'
-
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7'
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath 'com.android.tools.build:gradle:9.2.1'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.0'
     }
 }
 
 allprojects {
     repositories {
-        jcenter()
+        google()
+        mavenCentral()
+        maven { url "https://mvnrepository.com/artifact" }
+        maven { url "https://jitpack.io" }
+        maven {
+            url  "https://dl.bintray.com/piasy/maven"
+        }
+        maven{ url 'https://maven.aliyun.com/repository/google'}
+        maven{ url 'https://maven.aliyun.com/repository/gradle-plugin'}
+        maven{ url 'https://maven.aliyun.com/repository/public'}
+        maven{ url 'https://maven.aliyun.com/repository/jcenter'}
+        maven { url 'https://maven.google.com' }
+        maven {
+            url 'https://raw.githubusercontent.com/xiaomi-passport/maven-repository/master/releases'
+        }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
 }
 
 ext {
-    compileSdkVersion = 25
-    buildToolsVersion = "25.0.3"
+    compileSdkVersion = 36
+    buildToolsVersion = "36.0.0"
 
-    targetSdkVersion = 25
+    targetSdkVersion = 36
 
     versionCode = 800800
     versionName = "0.8.8"
