@@ -1757,7 +1757,7 @@ static int las_close(AVFormatContext* s) {
     return 0;
 }
 
-static int las_probe(AVProbeData* p) {
+static int las_probe(const AVProbeData* p) {
     if (p->filename && av_strstart(p->filename, "ijklas:", NULL))
         return AVPROBE_SCORE_MAX;
 
@@ -2074,5 +2074,4 @@ AVInputFormat ijkff_ijklas_demuxer = {
     .extensions     = "las",
     .flags          = AVFMT_NOFILE
 };
-
 

@@ -202,6 +202,8 @@ static const AVOption ffp_context_options[] = {
         OPTION_OFFSET(mediacodec_sync),           OPTION_INT(0, 0, 1) },
     { "mediacodec-default-name",          "mediacodec default name",
         OPTION_OFFSET(mediacodec_default_name),      OPTION_STR(NULL) },
+    { "mediacodec-auto-fallback",          "MediaCodec: fallback to avcodec once when hard decoder fails before first frame",
+        OPTION_OFFSET(mediacodec_auto_fallback),      OPTION_INT(0, 0, 1) },
     { "ijkmeta-delay-init",          "ijkmeta delay init",
         OPTION_OFFSET(ijkmeta_delay_init),      OPTION_INT(0, 0, 1) },
     { "render-wait-start",          "render wait start",

@@ -120,6 +120,27 @@ typedef struct IJKFF_Pipenode_Opaque {
     volatile bool             abort;
 } IJKFF_Pipenode_Opaque;
 
+static bool should_fallback_to_ffplay(FFPlayer *ffp)
+{
+    if (!ffp || !ffp->is)
+        return false;
+    if (!ffp->mediacodec_auto_fallback || ffp->mediacodec_auto_fallback_triggered)
+        return false;
+    return !ffp->is->viddec.first_frame_decoded;
+}
+
+static int fallback_to_ffplay_decoder(FFPlayer *ffp)
+{
+    if (!ffp || !ffp->is || !ffp->is->viddec.avctx)
+        return -1;
+
+    ffp->mediacodec_auto_fallback_triggered = 1;
+    ffp_set_video_codec_info(ffp, AVCODEC_MODULE_NAME, avcodec_get_name(ffp->is->viddec.avctx->codec_id));
+    ffp->stat.vdec_type = FFP_PROPV_DECODER_AVCODEC;
+    ALOGW("MediaCodec failed before first frame, fallback to avcodec\n");
+    return ffp_video_thread(ffp);
+}
+
 static SDL_AMediaCodec *create_codec_l(JNIEnv *env, IJKFF_Pipenode *node)
 {
     IJKFF_Pipenode_Opaque        *opaque   = node->opaque;
@@ -1537,7 +1558,11 @@ static int func_run_sync_loop(IJKFF_Pipenode *node) {
 
     while (!q->abort_request) {
         ret = drain_output_buffer2(env, node, AMC_SYNC_OUTPUT_TIMEOUT_US, &dequeue_count, frame, frame_rate);
+        if (ret < 0)
+            goto fail;
         ret = feed_input_buffer2(env, node, AMC_SYNC_INPUT_TIMEOUT_US, &enqueue_count);
+        if (ret < 0)
+            goto fail;
     }
 
 fail:
@@ -1556,6 +1581,9 @@ fail:
     SDL_AMediaCodec_stop(opaque->acodec);
     SDL_AMediaCodec_decreaseReferenceP(&opaque->acodec);
     ALOGI("MediaCodec: %s: exit: %d", __func__, ret);
+    if (ret < 0 && should_fallback_to_ffplay(ffp)) {
+        return fallback_to_ffplay_decoder(ffp);
+    }
     return ret;
 }
 
@@ -1669,12 +1697,10 @@ fail:
     SDL_AMediaCodec_stop(opaque->acodec);
     SDL_AMediaCodec_decreaseReferenceP(&opaque->acodec);
     ALOGI("MediaCodec: %s: exit: %d", __func__, ret);
+    if (ret < 0 && should_fallback_to_ffplay(ffp)) {
+        return fallback_to_ffplay_decoder(ffp);
+    }
     return ret;
-#if 0
-fallback_to_ffplay:
-    ALOGW("fallback to ffplay decoder\n");
-    return ffp_video_thread(opaque->ffp);
-#endif
 }
 
 static int func_flush(IJKFF_Pipenode *node)

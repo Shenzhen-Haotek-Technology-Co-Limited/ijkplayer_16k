@@ -718,6 +718,8 @@ typedef struct FFPlayer {
     int async_init_decoder;
     char *video_mime_type;
     char *mediacodec_default_name;
+    int mediacodec_auto_fallback;
+    int mediacodec_auto_fallback_triggered;
     int ijkmeta_delay_init;
     int render_wait_start;
 } FFPlayer;
@@ -851,6 +853,7 @@ inline static void ffp_reset_internal(FFPlayer *ffp)
 
     ffp->inject_opaque = NULL;
     ffp->ijkio_inject_opaque = NULL;
+    ffp->mediacodec_auto_fallback_triggered = 0;
     ffp_reset_statistic(&ffp->stat);
     ffp_reset_demux_cache_control(&ffp->dcc);
 }
