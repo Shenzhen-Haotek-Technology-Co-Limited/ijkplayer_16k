@@ -19,8 +19,8 @@
 # IJK_FFMPEG_UPSTREAM=git://git.videolan.org/ffmpeg.git
 # IJK_FFMPEG_UPSTREAM=https://github.com/CarGuo/FFmpeg.git
 # IJK_FFMPEG_FORK=https://github.com/CarGuo/FFmpeg.git
-IJK_FFMPEG_UPSTREAM=https://github.com/CarGuo/FFmpeg.git
-IJK_FFMPEG_FORK=https://github.com/CarGuo/FFmpeg.git
+IJK_FFMPEG_UPSTREAM=https://github.com/Shenzhen-Haotek-Technology-Co-Limited/FFmpeg.git
+IJK_FFMPEG_FORK=https://github.com/Shenzhen-Haotek-Technology-Co-Limited/FFmpeg.git
 IJK_FFMPEG_COMMIT=ijk-n4.3-20260301-007
 IJK_FFMPEG_LOCAL_REPO=extra/ffmpeg
 
