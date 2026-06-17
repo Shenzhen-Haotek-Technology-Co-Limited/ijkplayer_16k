@@ -40,6 +40,8 @@
 
 #include "libavutil/application.h"
 
+#include <pthread.h>
+
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
